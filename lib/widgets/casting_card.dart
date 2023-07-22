@@ -1,39 +1,32 @@
 import 'package:flutter/material.dart';
 
-class MovieSlider extends StatelessWidget {
-  const MovieSlider({super.key});
+class CastingCard extends StatelessWidget {
+  const CastingCard({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 10),
+      margin: const EdgeInsets.only(bottom: 30),
       width: double.infinity,
-      height: 230,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 20,
-              itemBuilder: (context, index) => const _MovieCard(),
-            ),
-          )
-        ],
+      height: 180,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: 10,
+        itemBuilder: (context, index) => const _CastCard(),
       ),
     );
   }
 }
 
-class _MovieCard extends StatelessWidget {
-  const _MovieCard();
+class _CastCard extends StatelessWidget {
+  const _CastCard();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 130,
-      height: 150,
       margin: const EdgeInsets.symmetric(horizontal: 10),
+      width: 110,
+      height: 100,
       child: Column(
         children: [
           GestureDetector(
@@ -49,10 +42,10 @@ class _MovieCard extends StatelessWidget {
             ),
           ),
           const Text(
-            "Description asdasdasdasd",
+            "Actor name",
+            textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
-            textAlign: TextAlign.center,
           )
         ],
       ),
