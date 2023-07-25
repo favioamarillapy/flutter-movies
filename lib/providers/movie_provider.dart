@@ -12,17 +12,18 @@ class MovieProvider extends ChangeNotifier {
   List<Movie> nowPlayingMovies = [];
   List<Movie> popularMovies = [];
 
+  int _popularPage = 0;
+
   MovieProvider() {
     getNowPlaying();
     getPopularMovies();
   }
 
   getNowPlaying() async {
-    var url = Uri.https(_baseUrl, '/3/movie/now_playing');
+    var url = Uri.https(_baseUrl, '/3/movie/now_playing', {"page": "1"});
     var response = await http.get(url, headers: {
       'Authorization': 'Bearer $_apiey',
-      'accept': 'application/json',
-      "page": "1"
+      'accept': 'application/json'
     });
 
     nowPlayingMovies = NowPlayingResponse.fromRawJson(response.body).results;
@@ -30,14 +31,20 @@ class MovieProvider extends ChangeNotifier {
   }
 
   getPopularMovies() async {
-    var url = Uri.https(_baseUrl, '/3/movie/popular');
+    _popularPage++;
+
+    var url =
+        Uri.https(_baseUrl, '/3/movie/popular', {"page": "$_popularPage"});
     var response = await http.get(url, headers: {
       'Authorization': 'Bearer $_apiey',
-      'accept': 'application/json',
-      "page": "1"
+      'accept': 'application/json'
     });
 
-    popularMovies = PopularResponse.fromRawJson(response.body).results;
+    popularMovies = [
+      ...popularMovies,
+      ...PopularResponse.fromRawJson(response.body).results
+    ];
+
     notifyListeners();
   }
 }

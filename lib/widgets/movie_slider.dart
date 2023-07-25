@@ -1,13 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movies/models/models.dart';
 
-class MovieSlider extends StatelessWidget {
+class MovieSlider extends StatefulWidget {
   final List<Movie> popularMovies;
+  final Function onNextPage;
 
   const MovieSlider({
     super.key,
     required this.popularMovies,
+    required this.onNextPage,
   });
+
+  @override
+  State<MovieSlider> createState() => _MovieSliderState();
+}
+
+class _MovieSliderState extends State<MovieSlider> {
+  final ScrollController _scrollController = new ScrollController();
+  bool _canGetMore = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scrollController.addListener(() {
+      final double diff = _scrollController.position.maxScrollExtent -
+          _scrollController.position.pixels;
+
+      if (diff <= 500) {
+        if (_canGetMore) {
+          _canGetMore = false;
+          widget.onNextPage();
+        }
+      } else {
+        _canGetMore = true;
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +54,11 @@ class MovieSlider extends StatelessWidget {
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               scrollDirection: Axis.horizontal,
-              itemCount: popularMovies.length,
+              itemCount: widget.popularMovies.length,
               itemBuilder: (context, index) =>
-                  _MovieCard(movie: popularMovies[index]),
+                  _MovieCard(movie: widget.popularMovies[index]),
             ),
           )
         ],
