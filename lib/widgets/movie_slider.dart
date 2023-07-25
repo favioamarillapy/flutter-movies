@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_movies/models/models.dart';
 
 class MovieSlider extends StatelessWidget {
-  const MovieSlider({super.key});
+  final List<Movie> popularMovies;
+
+  const MovieSlider({
+    super.key,
+    required this.popularMovies,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +21,9 @@ class MovieSlider extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 20,
-              itemBuilder: (context, index) => const _MovieCard(),
+              itemCount: popularMovies.length,
+              itemBuilder: (context, index) =>
+                  _MovieCard(movie: popularMovies[index]),
             ),
           )
         ],
@@ -26,7 +33,9 @@ class MovieSlider extends StatelessWidget {
 }
 
 class _MovieCard extends StatelessWidget {
-  const _MovieCard();
+  final Movie movie;
+
+  const _MovieCard({required this.movie});
 
   @override
   Widget build(BuildContext context) {
@@ -37,19 +46,20 @@ class _MovieCard extends StatelessWidget {
       child: Column(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, "detail",
-                arguments: "movie-instance"),
+            onTap: () =>
+                Navigator.pushNamed(context, "detail", arguments: movie),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: const FadeInImage(
-                placeholder: AssetImage("assets/no-image.jpg"),
-                image: NetworkImage("https://via.placeholder.com/300x400"),
+              child: FadeInImage(
+                placeholder: const AssetImage("assets/no-image.jpg"),
+                image: NetworkImage(movie.fullPosterPath! ??
+                    "https://via.placeholder.com/300x400"),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          const Text(
-            "Description asdasdasdasd",
+          Text(
+            movie.overview,
             overflow: TextOverflow.ellipsis,
             maxLines: 2,
             textAlign: TextAlign.center,

@@ -1,8 +1,14 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_movies/models/models.dart';
 
 class CardSwiperWidget extends StatelessWidget {
-  const CardSwiperWidget({super.key});
+  final List<Movie> nowPlayingMovies;
+
+  const CardSwiperWidget({
+    super.key,
+    required this.nowPlayingMovies,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,19 +19,21 @@ class CardSwiperWidget extends StatelessWidget {
       width: double.infinity,
       height: size.height * 0.5,
       child: Swiper(
-        itemCount: 10,
+        itemCount: nowPlayingMovies.length,
         itemWidth: size.width * 0.6,
         itemHeight: size.height * 0.9,
         layout: SwiperLayout.STACK,
         itemBuilder: (BuildContext context, int index) {
+          final Movie movie = nowPlayingMovies[index];
+
           return GestureDetector(
-            onTap: () => Navigator.pushNamed(context, "detail",
-                arguments: "movie-instance"),
+            onTap: () =>
+                Navigator.pushNamed(context, "detail", arguments: movie),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: const FadeInImage(
-                placeholder: AssetImage("assets/no-image.jpg"),
-                image: NetworkImage("https://via.placeholder.com/300x400"),
+              child: FadeInImage(
+                placeholder: const AssetImage("assets/no-image.jpg"),
+                image: NetworkImage(movie.fullPosterPath),
                 fit: BoxFit.cover,
               ),
             ),
