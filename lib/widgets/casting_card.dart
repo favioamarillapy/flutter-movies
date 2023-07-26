@@ -1,25 +1,49 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_movies/models/models.dart';
+import 'package:flutter_movies/providers/providers.dart';
+import 'package:provider/provider.dart';
 
 class CastingCard extends StatelessWidget {
-  const CastingCard({super.key});
+  final int movieId;
+
+  const CastingCard({super.key, required this.movieId});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 30),
-      width: double.infinity,
-      height: 180,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 10,
-        itemBuilder: (context, index) => const _CastCard(),
-      ),
+    final movieProvider = Provider.of<MovieProvider>(context);
+
+    return FutureBuilder(
+      future: movieProvider.getCastings(movieId),
+      builder: (_, AsyncSnapshot<List<Cast>> snapshot) {
+        if (!snapshot.hasData) {
+          return Container(
+            constraints: const BoxConstraints(maxWidth: 150),
+            height: 180,
+            child: const CupertinoActivityIndicator(),
+          );
+        }
+
+        final List<Cast> cast = snapshot.data!;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 30),
+          width: double.infinity,
+          height: 180,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: cast.length,
+            itemBuilder: (context, index) => _CastCard(cast: cast[index]),
+          ),
+        );
+      },
     );
   }
 }
 
 class _CastCard extends StatelessWidget {
-  const _CastCard();
+  final Cast cast;
+
+  const _CastCard({super.key, required this.cast});
 
   @override
   Widget build(BuildContext context) {
@@ -29,23 +53,21 @@ class _CastCard extends StatelessWidget {
       height: 100,
       child: Column(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(context, "detail",
-                arguments: "movie-instance"),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: const FadeInImage(
-                placeholder: AssetImage("assets/no-image.jpg"),
-                image: NetworkImage("https://via.placeholder.com/300x400"),
-                fit: BoxFit.cover,
-              ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: FadeInImage(
+              placeholder: const AssetImage("assets/no-image.jpg"),
+              image: NetworkImage(cast.fullProfilePath),
+              fit: BoxFit.cover,
             ),
           ),
-          const Text(
-            "Actor name",
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 2,
+          Expanded(
+            child: Text(
+              cast.originalName,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
           )
         ],
       ),

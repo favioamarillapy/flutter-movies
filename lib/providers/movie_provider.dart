@@ -11,6 +11,7 @@ class MovieProvider extends ChangeNotifier {
 
   List<Movie> nowPlayingMovies = [];
   List<Movie> popularMovies = [];
+  Map<int, List<Cast>> castings = {};
 
   int _popularPage = 0;
 
@@ -46,5 +47,23 @@ class MovieProvider extends ChangeNotifier {
     ];
 
     notifyListeners();
+  }
+
+  Future<List<Cast>> getCastings(int movieId) async {
+    if (castings.containsKey(movieId)) {
+      return castings[movieId]!;
+    }
+
+    var url = Uri.https(_baseUrl, '/3/movie/$movieId/credits');
+    var response = await http.get(url, headers: {
+      'Authorization': 'Bearer $_apiey',
+      'accept': 'application/json'
+    });
+
+    final creditsResponse = CreditsResponse.fromRawJson(response.body);
+
+    castings[movieId] = creditsResponse.cast;
+
+    return creditsResponse.cast;
   }
 }
