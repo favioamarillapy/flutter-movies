@@ -1,6 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_movies/models/movie_search_response.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_movies/models/models.dart';
 
@@ -21,8 +20,8 @@ class MovieProvider extends ChangeNotifier {
   }
 
   getNowPlaying() async {
-    var url = Uri.https(_baseUrl, '/3/movie/now_playing', {"page": "1"});
-    var response = await http.get(url, headers: {
+    final url = Uri.https(_baseUrl, '/3/movie/now_playing', {"page": "1"});
+    final response = await http.get(url, headers: {
       'Authorization': 'Bearer $_apiey',
       'accept': 'application/json'
     });
@@ -34,9 +33,9 @@ class MovieProvider extends ChangeNotifier {
   getPopularMovies() async {
     _popularPage++;
 
-    var url =
+    final url =
         Uri.https(_baseUrl, '/3/movie/popular', {"page": "$_popularPage"});
-    var response = await http.get(url, headers: {
+    final response = await http.get(url, headers: {
       'Authorization': 'Bearer $_apiey',
       'accept': 'application/json'
     });
@@ -54,8 +53,8 @@ class MovieProvider extends ChangeNotifier {
       return castings[movieId]!;
     }
 
-    var url = Uri.https(_baseUrl, '/3/movie/$movieId/credits');
-    var response = await http.get(url, headers: {
+    final url = Uri.https(_baseUrl, '/3/movie/$movieId/credits');
+    final response = await http.get(url, headers: {
       'Authorization': 'Bearer $_apiey',
       'accept': 'application/json'
     });
@@ -65,5 +64,21 @@ class MovieProvider extends ChangeNotifier {
     castings[movieId] = creditsResponse.cast;
 
     return creditsResponse.cast;
+  }
+
+  Future<List<Movie>> sarchMovie(String query) async {
+    if (query == "") {
+      return [];
+    }
+
+    final url = Uri.https(_baseUrl, '/3/search/movie', {"query": query});
+    final response = await http.get(url, headers: {
+      'Authorization': 'Bearer $_apiey',
+      'accept': 'application/json'
+    });
+
+    final movieSearchResponse = MovieSearchResponse.fromRawJson(response.body);
+
+    return movieSearchResponse.results;
   }
 }
